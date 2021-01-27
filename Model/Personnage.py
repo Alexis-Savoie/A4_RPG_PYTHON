@@ -33,7 +33,7 @@ class Personnage():
         self.max_pv = kwargs.get("max_pv") if kwargs.get("max_pv") != None else 10
         self.cur_pv = kwargs.get("cur_pv") if kwargs.get("cur_pv") != None else 10
 
-        self.att_phy = kwargs.get("att_phy") if kwargs.get("att_phy") != None else 50
+        self.att_phy = kwargs.get("att_phy") if kwargs.get("att_phy") != None else 10
         self.def_phy = kwargs.get("def_phy") if kwargs.get("def_phy") != None else 10
         self.att_spe = kwargs.get("att_spe") if kwargs.get("att_spe") != None else 10
         self.def_spe = kwargs.get("def_spe") if kwargs.get("def_spe") != None else 10

@@ -110,8 +110,26 @@ class Combat():
                     self.fightEndedWith = "win"
         return returnArr
 
-
-
+    def PlayerTryToFlee(self):
+        returnArr = []
+        resultat_de = random.randint(0, 100)
+        # Fuite réussite
+        if (resultat_de >= 50):
+            self.isFinished = True
+            self.fightEndedWith = "flee"
+        # Fuite raté (tour gaché et mob attaque)
+        else:
+            texteAttaqueEnnemie = [" attaque (physique) ", " attaque (spéciale) "]
+            returnArr.append("Vous n'avez pas réussit à fuir...")
+            resultat_de = self.lancerDe()
+            attaqueEnnemie = random.randint(0, 1)
+            playerDamage = self.calculateDamage(True, True, resultat_de)
+            self.inputPersonnage.damageCharacter(playerDamage)
+            returnArr.append(self.inputMob.mob_name + texteAttaqueEnnemie[attaqueEnnemie] + str(resultat_de) + "! " + str(playerDamage) + " dégats infligé à " + self.inputPersonnage.c_name)
+            if (self.inputPersonnage.cur_pv < 1):
+                self.isFinished = True
+                self.fightEndedWith = "lose"
+        return returnArr
 
 
 
@@ -127,24 +145,31 @@ while combat.isFinished == False:
     print("COMBAT :")
     print(perso.c_name + " : " + str(perso.cur_pv) + " PV")
     print(mob.mob_name + " : " + str(mob.cur_pv) + " PV")
-    input()
-    returnArr = combat.PlayerUsePhysicalAttack()
-    print(returnArr)
-if (combat.fightEndedWith == "win"):
-    print("VICTOIRE ! vous remporter " + str(mob.mob_exp) + " EXP")
-    isLevelUp = perso.addEXP(mob.mob_exp)
-    if (isLevelUp):
-        print("Vous passez au niveau " + str(perso.lvl) + " !!!")
-    loot = mob.mobLoot()
-    if (loot != False):
-        print(mob.mob_name + " a fait tomber l'objet " + LIST_ITEM[loot]['item_name'])
-        perso.addItemToBag(loot, 1)
-        perso.showBag()
-    
+    choix = input()
+    if (choix == "f"):
+        returnArr = combat.PlayerTryToFlee()
+        print(returnArr)
+        if (combat.fightEndedWith == "flee"):
+            print("Vous prenez la fuite")
+        if (combat.fightEndedWith == "lose"):
+            print("DEFAITE ! vous avez perdu :c ")
+    else:
+        returnArr = combat.PlayerUsePhysicalAttack()
+        print(returnArr)
+        if (combat.fightEndedWith == "win"):
+            print("VICTOIRE ! vous remporter " + str(mob.mob_exp) + " EXP")
+            isLevelUp = perso.addEXP(mob.mob_exp)
+            if (isLevelUp):
+                print("Vous passez au niveau " + str(perso.lvl) + " !!!")
+            loot = mob.mobLoot()
+            if (loot != False):
+                print(mob.mob_name + " a fait tomber l'objet " + LIST_ITEM[loot]['item_name'])
+                perso.addItemToBag(loot, 1)
+                perso.showBag()
+        if (combat.fightEndedWith == "lose"):
+            print("DEFAITE ! vous avez perdu :c ")
 
-
-if (combat.fightEndedWith == "lose"):
-    print("DEFAITE ! vous avez perdu :c ")
+        
 
 
 #print(combat.calculateDamage(True, True, rDe))
