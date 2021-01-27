@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from random import randint
+import random
 
 
 from Mob import *
 from Personnage import *
+
+from constMob import LIST_MOB
 
 """ Class Mob """
 
@@ -18,10 +20,11 @@ class Combat():
         self.inputMob = inputMob
 
         self.isFinished = False
+        self.fightEndedWith = None
 
 
     def playerMoveFirst(self):
-        if (self.inputPersonnage >= self.inputMob):
+        if (self.inputPersonnage.vit >= self.inputMob.vit):
             return True
         else:
             return False
@@ -61,9 +64,51 @@ class Combat():
             facteur_de = 4
 
 
-        damage = (((attackStat/defenseStat)/50)+2)*facteur_de 
+        damage = ((50*(attackStat/defenseStat)/50)+2)*facteur_de 
         damage = round(damage, 0)
         return damage
+
+
+    def PlayerUsePhysicalAttack(self):
+        returnArr = []
+        texteAttaqueEnnemie = [" attaque (physique) ", " attaque (spéciale) "]
+        #User attacks first
+        if (self.playerMoveFirst() == True):
+            resultat_de = self.lancerDe()
+            mobDamage = self.calculateDamage(False, True, resultat_de)
+            self.inputMob.damageMob(mobDamage)
+            returnArr.append(self.inputPersonnage.c_name + " attaque (physique) " + str(resultat_de) + "! " + str(mobDamage) + " dégats infligé à " + self.inputMob.mob_name)
+            if (self.inputMob.cur_pv < 1):
+                self.isFinished = True
+                self.fightEndedWith = "win"
+            else:
+                resultat_de = self.lancerDe()
+                attaqueEnnemie = random.randint(0, 1)
+                playerDamage = self.calculateDamage(True, attaqueEnnemie, resultat_de)
+                self.inputPersonnage.damageCharacter(playerDamage)
+                returnArr.append(self.inputMob.mob_name + texteAttaqueEnnemie[attaqueEnnemie] + str(resultat_de) + "! " + str(playerDamage) + " dégats infligé à " + self.inputPersonnage.c_name)
+                if (self.inputPersonnage.cur_pv < 1):
+                    self.isFinished = True
+                    self.fightEndedWith = "lose"
+        # User attacks in second
+        else:
+            resultat_de = self.lancerDe()
+            attaqueEnnemie = random.randint(0, 1)
+            playerDamage = self.calculateDamage(True, True, resultat_de)
+            self.inputPersonnage.damageCharacter(playerDamage)
+            returnArr.append(self.inputMob.mob_name + texteAttaqueEnnemie[attaqueEnnemie] + str(resultat_de) + "! " + str(playerDamage) + " dégats infligé à " + self.inputPersonnage.c_name)
+            if (self.inputPersonnage.cur_pv < 1):
+                self.isFinished = True
+                self.fightEndedWith = "lose"
+            else:
+                resultat_de2 = self.lancerDe()
+                mobDamage2 = self.calculateDamage(False, True, resultat_de2)
+                self.inputMob.damageMob(mobDamage2)
+                returnArr.append(self.inputPersonnage.c_name + " attaque (physique) " + str(resultat_de) + "! " + str(mobDamage) + " dégats infligé à " + self.inputMob.mob_name)
+                if (self.inputMob.cur_pv < 1):
+                    self.isFinished = True
+                    self.fightEndedWith = "win"
+        return returnArr
 
 
 
@@ -75,7 +120,31 @@ class Combat():
 
 perso = Personnage("Michel", 1, 3)
 mob = Mob(0)
-combat = Combat(perso, mob)
-rDe = combat.lancerDe()
+perso.showBag()
 
-print(combat.calculateDamage(True, True, rDe))
+combat = Combat(perso, mob)
+while combat.isFinished == False:
+    print("COMBAT :")
+    print(perso.c_name + " : " + str(perso.cur_pv) + " PV")
+    print(mob.mob_name + " : " + str(mob.cur_pv) + " PV")
+    input()
+    returnArr = combat.PlayerUsePhysicalAttack()
+    print(returnArr)
+if (combat.fightEndedWith == "win"):
+    print("VICTOIRE ! vous remporter " + str(mob.mob_exp) + " EXP")
+    isLevelUp = perso.addEXP(mob.mob_exp)
+    if (isLevelUp):
+        print("Vous passez au niveau " + str(perso.lvl) + " !!!")
+    loot = mob.mobLoot()
+    if (loot != False):
+        print(mob.mob_name + " a fait tomber l'objet " + LIST_ITEM[loot]['item_name'])
+        perso.addItemToBag(loot, 1)
+        perso.showBag()
+    
+
+
+if (combat.fightEndedWith == "lose"):
+    print("DEFAITE ! vous avez perdu :c ")
+
+
+#print(combat.calculateDamage(True, True, rDe))

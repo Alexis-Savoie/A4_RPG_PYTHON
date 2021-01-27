@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import math
+import random
+
 from constMob import LIST_MOB
 
 
@@ -12,6 +15,7 @@ class Mob():
     def __init__(self, mob_id):
 
         # Initialiez mob properties and stats
+        self.mob_id = mob_id
         self.mob_name = LIST_MOB[mob_id]["name"]
 
         self.max_pv = LIST_MOB[mob_id]["pv"]
@@ -25,22 +29,30 @@ class Mob():
 
         self.mob_exp = LIST_MOB[mob_id]["exp"]
         self.fuite = LIST_MOB[mob_id]["fuite"]
-        self.drop = LIST_MOB[mob_id]["drop"]
+        self.drop_item_id = LIST_MOB[mob_id]["drop_item_id"]
+        self.drop_prob = LIST_MOB[mob_id]["drop_prob"]
 
 
-    def damageMog(self, damageAmount):
-        current_pv = current_pv = self.mob_cur_pv - damageAmount
+    def damageMob(self, damageAmount):
+        current_pv = current_pv = self.cur_pv - damageAmount
         if (current_pv <= 0):
-            self.mob_cur_pv =  0
+            self.cur_pv =  0
         else:
-            self.mob_cur_pv = self.mob_cur_pv - damageAmount
+            self.cur_pv = self.cur_pv - damageAmount
 
     def healMob(self, healAmount):
-        current_pv = self.mob_cur_pv + healAmount
+        current_pv = self.cur_pv + healAmount
         if (current_pv >= self.mob_max_pv):
-            self.mob_cur_pv = self.mob_max_pv
+            self.cur_pv = self.mob_max_pv
         else:
-            self.mob_cur_pv = current_pv
+            self.cur_pv = current_pv
+
+    def mobLoot(self):
+        random.randint(0, 100)
+        if (self.drop_prob <= random.randint(0, 100)):
+            return self.drop_item_id
+        else:
+            return False
 
 test = Mob(0)
 print(test.mob_name)
