@@ -102,8 +102,8 @@ class Personnage():
 
     def healCharacter(self, healAmount):
         current_pv = self.cur_pv + healAmount
-        if (current_pv >= self.c_max_pv):
-            self.cur_pv = self.c_max_pv
+        if (current_pv >= self.max_pv):
+            self.cur_pv = self.max_pv
         else:
             self.cur_pv = current_pv
 
@@ -119,6 +119,17 @@ class Personnage():
         else:
             self.bag.append([idItem, quantity, 0])
 
+    def removeItem(self, idItem : int, quantity : int):
+        c_pos = 0
+        # If this item already exist we just increase the quantity otherwise we add it completely
+        for itemSlot in self.bag:
+            if (itemSlot[0] == idItem):
+                itemPosition = c_pos
+            c_pos = c_pos + 1
+        if (itemPosition != None):
+            self.bag[itemPosition][1] = self.bag[itemPosition][1] - quantity
+            if (self.bag[itemPosition][1] < 1):
+                del self.bag[itemPosition]
 
 
     def equipItem(self, idItem):

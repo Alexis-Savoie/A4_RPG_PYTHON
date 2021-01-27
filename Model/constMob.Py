@@ -7,7 +7,7 @@ LIST_MOB = {
         "att_spe": 5,
         "def_spe": 5,
         "vit": 5,
-        "exp" : 20,
+        "exp" : 10,
         "fuite" : True,
         "drop_item_id" : 34,
         "drop_prob" : 50

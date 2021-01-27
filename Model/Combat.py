@@ -94,7 +94,7 @@ class Combat():
         else:
             resultat_de = self.lancerDe()
             attaqueEnnemie = random.randint(0, 1)
-            playerDamage = self.calculateDamage(True, True, resultat_de)
+            playerDamage = self.calculateDamage(True, attaqueEnnemie, resultat_de)
             self.inputPersonnage.damageCharacter(playerDamage)
             returnArr.append(self.inputMob.mob_name + texteAttaqueEnnemie[attaqueEnnemie] + str(resultat_de) + "! " + str(playerDamage) + " dégats infligé à " + self.inputPersonnage.c_name)
             if (self.inputPersonnage.cur_pv < 1):
@@ -109,6 +109,51 @@ class Combat():
                     self.isFinished = True
                     self.fightEndedWith = "win"
         return returnArr
+
+
+
+    def PlayerUseSpecialAttack(self):
+        returnArr = []
+        texteAttaqueEnnemie = [" attaque (physique) ", " attaque (spéciale) "]
+        #User attacks first
+        if (self.playerMoveFirst() == True):
+            resultat_de = self.lancerDe()
+            mobDamage = self.calculateDamage(False, False, resultat_de)
+            self.inputMob.damageMob(mobDamage)
+            returnArr.append(self.inputPersonnage.c_name + " attaque (spéciale) " + str(resultat_de) + "! " + str(mobDamage) + " dégats infligé à " + self.inputMob.mob_name)
+            if (self.inputMob.cur_pv < 1):
+                self.isFinished = True
+                self.fightEndedWith = "win"
+            else:
+                resultat_de = self.lancerDe()
+                attaqueEnnemie = random.randint(0, 1)
+                playerDamage = self.calculateDamage(True, attaqueEnnemie, resultat_de)
+                self.inputPersonnage.damageCharacter(playerDamage)
+                returnArr.append(self.inputMob.mob_name + texteAttaqueEnnemie[attaqueEnnemie] + str(resultat_de) + "! " + str(playerDamage) + " dégats infligé à " + self.inputPersonnage.c_name)
+                if (self.inputPersonnage.cur_pv < 1):
+                    self.isFinished = True
+                    self.fightEndedWith = "lose"
+        # User attacks in second
+        else:
+            resultat_de = self.lancerDe()
+            attaqueEnnemie = random.randint(0, 1)
+            playerDamage = self.calculateDamage(True, attaqueEnnemie, resultat_de)
+            self.inputPersonnage.damageCharacter(playerDamage)
+            returnArr.append(self.inputMob.mob_name + texteAttaqueEnnemie[attaqueEnnemie] + str(resultat_de) + "! " + str(playerDamage) + " dégats infligé à " + self.inputPersonnage.c_name)
+            if (self.inputPersonnage.cur_pv < 1):
+                self.isFinished = True
+                self.fightEndedWith = "lose"
+            else:
+                resultat_de2 = self.lancerDe()
+                mobDamage2 = self.calculateDamage(False, False, resultat_de2)
+                self.inputMob.damageMob(mobDamage2)
+                returnArr.append(self.inputPersonnage.c_name + " attaque (spéciale) " + str(resultat_de) + "! " + str(mobDamage) + " dégats infligé à " + self.inputMob.mob_name)
+                if (self.inputMob.cur_pv < 1):
+                    self.isFinished = True
+                    self.fightEndedWith = "win"
+        return returnArr
+
+
 
     def PlayerTryToFlee(self):
         returnArr = []
@@ -153,6 +198,11 @@ while combat.isFinished == False:
             print("Vous prenez la fuite")
         if (combat.fightEndedWith == "lose"):
             print("DEFAITE ! vous avez perdu :c ")
+    elif (choix == "o"):
+        perso.removeItem(34, 1)
+        perso.healCharacter(20)
+        print("Vous utiliser Potion 20 pv restoré !")
+
     else:
         returnArr = combat.PlayerUsePhysicalAttack()
         print(returnArr)
